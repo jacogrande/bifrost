@@ -76,3 +76,33 @@ The `/download` endpoint is your main interface for initiating downloads to your
 ```
 
 This endpoint enables you to specify exactly where and how the downloaded content should be stored and managed within your media server, ensuring an organized and straightforward user experience.
+
+## 🖼️ /setPoster Endpoint
+
+### Overview
+
+The `/setPoster` endpoint is your main interface for customizing media posters
+
+### API Details
+
+**Endpoint:** `/setPoster`
+
+**Method:** `POST`
+
+**Request Payload:**
+
+- **folder:** The name of the folder (configured during --init) where the poster should be stored
+- **name:** The media's custom name (must match the downloaded torrent's name).
+- **url:** A URL for the poster image.
+
+#### Example Request
+
+```json
+{
+  "folder": "MyMovies",
+  "name": "Example Movie",
+  "url": "https://example.com/poster.jpg"
+}
+```
+
+This endpoint allows you to manually set or update the poster of a downloaded item in your media server, ensuring that your media library is always visually appealing and easy to navigate.
