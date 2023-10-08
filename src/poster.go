@@ -2,11 +2,47 @@ package src
 
 import (
 	"errors"
+	"fmt"
 	"io"
 	"net/http"
 	"os"
 	"path"
+	"strings"
 )
+
+// determine the file extension based on the content type
+func extractImageExtension(contentType string) (string, error) {
+	if contentType == "" {
+		return "", errors.New("no content type provided")
+	}
+
+	splittedContentType := strings.Split(contentType, ";")
+	mainType := splittedContentType[0]
+
+	switch mainType {
+	case "image/jpeg":
+		return ".jpg", nil
+	case "image/png":
+		return ".png", nil
+	default:
+		return "", fmt.Errorf("unsupported image type: %s", contentType)
+	}
+}
+
+// save the image content to the specified path
+func saveImage(imageContent io.Reader, filePathWithName string) error {
+	file, err := os.Create(filePathWithName)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	if _, err := io.Copy(file, imageContent); err != nil {
+		return err
+	}
+
+	return nil
+}
 
 // GetPoster downloads an image from the provided URL and saves it to the specified file path.
 func GetPoster(url, filePath, name string) error {
@@ -24,29 +60,15 @@ func GetPoster(url, filePath, name string) error {
 
 	// Ensure the content type is an image
 	contentType := resp.Header.Get("Content-Type")
-	if contentType != "image/jpeg" && contentType != "image/png" {
-		return errors.New("URL does not point to a valid image")
-	}
-
-	// Determine the extension for the image
-	var ext string
-	switch contentType {
-	case "image/jpeg":
-		ext = ".jpg"
-	case "image/png":
-		ext = ".png"
-	default:
-		return errors.New("unsupported image type")
-	}
-
-	// Open a file for writing
-	file, err := os.Create(path.Join(filePath, name+ext))
+	ext, err := extractImageExtension(contentType)
 	if err != nil {
 		return err
 	}
-	defer file.Close()
 
-	// Copy the image content to the file
-	_, err = io.Copy(file, resp.Body)
-	return err
+	filePathWithName := path.Join(filePath, name+ext)
+	if err := saveImage(resp.Body, filePathWithName); err != nil {
+		return fmt.Errorf("error saving image: %w", err)
+	}
+
+	return nil
 }
