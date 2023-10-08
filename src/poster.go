@@ -4,9 +4,11 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"io/fs"
 	"net/http"
 	"os"
 	"path"
+	"path/filepath"
 	"strings"
 )
 
@@ -44,8 +46,35 @@ func saveImage(imageContent io.Reader, filePathWithName string) error {
 	return nil
 }
 
+// findDeepestDir recursively finds the deepest directory starting from baseDir.
+func findDeepestDir(baseDir string) (string, error) {
+	var deepestDir string
+	var deepestDirLevel int
+
+	err := filepath.WalkDir(baseDir, func(currentPath string, d fs.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+
+		if d.IsDir() {
+			currentLevel := len(strings.Split(currentPath, string(os.PathSeparator)))
+			if currentLevel > deepestDirLevel {
+				deepestDir = currentPath
+				deepestDirLevel = currentLevel
+			}
+		}
+
+		return nil
+	})
+	if err != nil {
+		return "", err
+	}
+
+	return deepestDir, nil
+}
+
 // GetPoster downloads an image from the provided URL and saves it to the specified file path.
-func GetPoster(url, filePath, name string) error {
+func GetPoster(url, filePath string) error {
 	// Make a GET request
 	resp, err := http.Get(url)
 	if err != nil {
@@ -65,7 +94,13 @@ func GetPoster(url, filePath, name string) error {
 		return err
 	}
 
-	filePathWithName := path.Join(filePath, name+ext)
+	// Find the deepest directory to save the poster
+	deepestDir, err := findDeepestDir(filePath)
+	if err != nil {
+		return fmt.Errorf("error finding deepest directory: %w", err)
+	}
+
+	filePathWithName := path.Join(deepestDir, "poster"+ext)
 	if err := saveImage(resp.Body, filePathWithName); err != nil {
 		return fmt.Errorf("error saving image: %w", err)
 	}
