@@ -47,6 +47,7 @@ func saveImage(imageContent io.Reader, filePathWithName string) error {
 }
 
 // findDeepestDir recursively finds the deepest directory starting from baseDir.
+// NOTE: This won't work if the video file isn't at the deepest level of the directory
 func findDeepestDir(baseDir string) (string, error) {
 	var deepestDir string
 	var deepestDirLevel int
