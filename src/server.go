@@ -12,11 +12,12 @@ import (
 	"github.com/anacrolix/torrent"
 )
 
-const TIMEOUT_DURATION = 15 * time.Minute
+const TIMEOUT_DURATION = 30 * time.Minute
 
 func StartServer() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/download", downloadHandler)
+	mux.HandleFunc("/setPoster", setPosterHandler)
 	log.Println("Server is listening on port 8080...")
 	http.ListenAndServe(":8080", mux)
 }
@@ -56,7 +57,6 @@ func downloadHandler(w http.ResponseWriter, r *http.Request) {
 		writeError(w, err, http.StatusBadRequest)
 		return
 	}
-	log.Println("folder: \"", req.Name, "\" at", folderPath)
 
 	// async channels
 	errCh := make(chan error)
@@ -75,7 +75,7 @@ func downloadHandler(w http.ResponseWriter, r *http.Request) {
 		writeError(w, err, http.StatusInternalServerError)
 		return
 	case <-successCh:
-		if err := GetPoster(req.PosterURL, folderPath, req.Name); err != nil {
+		if err := GetPoster(req.PosterURL, folderPath); err != nil {
 			writeError(w, err, http.StatusBadRequest)
 			return
 		} else {
