@@ -72,7 +72,7 @@ func Init() {
 			}
 		}
 
-		fmt.Print("Would you like to add another input? (y/n): ")
+		fmt.Print("Would you like to add another folder? (y/n): ")
 		choice, _ := reader.ReadString('\n') // For simplicity, we're ignoring the error here.
 		choice = strings.TrimSpace(strings.ToLower(choice))
 
