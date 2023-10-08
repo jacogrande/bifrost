@@ -1,12 +1,12 @@
 package main
 
 import (
+	"bifrost/src"
 	"flag"
-	"plex/src"
 )
 
 func main() {
-	initFlag := flag.Bool("init", false, "Initialize Bifrost (configure media folders)")
+	initFlag := flag.Bool("init", false, "Initialize Bifrost (configure target folders)")
 	flag.Parse()
 
 	if *initFlag {

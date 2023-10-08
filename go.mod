@@ -1,4 +1,4 @@
-module plex
+module bifrost
 
 go 1.21.1
 
@@ -58,7 +58,9 @@ require (
 	github.com/pion/udp v0.1.4 // indirect
 	github.com/pion/webrtc/v3 v3.1.42 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
+	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/rs/dnscache v0.0.0-20211102005908-e0241e321417 // indirect
+	github.com/stretchr/testify v1.8.4 // indirect
 	github.com/tidwall/btree v1.6.0 // indirect
 	go.etcd.io/bbolt v1.3.6 // indirect
 	go.opentelemetry.io/otel v1.8.0 // indirect
@@ -69,4 +71,5 @@ require (
 	golang.org/x/sync v0.0.0-20220722155255-886fb9371eb4 // indirect
 	golang.org/x/sys v0.5.0 // indirect
 	golang.org/x/time v0.0.0-20220609170525-579cf78fd858 // indirect
+	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
